@@ -42,15 +42,15 @@ getCameraZoom :: proc() -> f32 {
 }
 
 getScreenSpaceProj :: proc() -> gmath.Mat4 {
-	scale := f32(GAME_HEIGHT) / f32(windowHeight) // same res as standard world zoom
+	aspect := f32(windowWidth) / f32(windowHeight)
 
-	w := f32(windowWidth) * scale
-	h := f32(windowHeight) * scale
+	viewHeight := f32(GAME_HEIGHT)
+	viewWidth := viewHeight * aspect
 
-	// this centers things
-	offset := GAME_HEIGHT * 0.5 - w * 0.5
+	viewLeft := (f32(GAME_WIDTH) * 0.5) - (viewWidth * 0.5)
+	viewRight := viewLeft + viewWidth
 
-	return linalg.matrix_ortho3d_f32(0 + offset, w + offset, 0, h, -1, 1)
+	return linalg.matrix_ortho3d_f32(viewLeft, viewRight, 0, viewHeight, -1, 1)
 }
 
 screenPivot :: proc(pivot: gmath.Pivot) -> (x, y: f32) {
