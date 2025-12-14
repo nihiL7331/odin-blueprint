@@ -2,12 +2,12 @@ package game_types
 
 import "../gmath"
 
-import sg "../../sokol/gfx"
+ViewHandle :: distinct u32
 
 Sprite :: struct {
 	width, height: i32,
 	texIndex:      u8,
-	sgView:        sg.View,
+	sgView:        ViewHandle, // sg.View is generally just a struct with ID and that way we dont have to import sokol/gfx
 	data:          [^]byte,
 	atlasUvs:      gmath.Vec4,
 }
