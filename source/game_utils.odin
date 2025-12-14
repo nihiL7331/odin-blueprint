@@ -54,45 +54,40 @@ getScreenSpaceProj :: proc() -> gmath.Mat4 {
 }
 
 screenPivot :: proc(pivot: gmath.Pivot) -> (x, y: f32) {
-	#partial switch (pivot) {
-	case .topLeft:
-		x = 0
-		y = f32(windowHeight)
+	aspect := f32(windowWidth) / f32(windowHeight)
 
-	case .topCenter:
-		x = f32(windowWidth) / 2
-		y = f32(windowHeight)
+	viewHeight := f32(GAME_HEIGHT)
+	viewWidth := viewHeight * aspect
 
-	case .bottomLeft:
-		x = 0
-		y = 0
+	left: f32 = (f32(GAME_WIDTH) * 0.5) - (viewWidth * 0.5)
+	right: f32 = left + viewWidth
+	top: f32 = viewHeight
+	bottom: f32 = 0.0
 
-	case .centerCenter:
-		x = f32(windowWidth) / 2
-		y = f32(windowHeight) / 2
+	centerX: f32 = (left + right) * 0.5
+	centerY: f32 = (top + bottom) * 0.5
 
-	case .topRight:
-		x = f32(windowWidth)
-		y = f32(windowHeight)
-
-	case .bottomCenter:
-		x = f32(windowWidth) / 2
-		y = 0
-	//TODO: rest
+	switch pivot {
+	case gmath.Pivot.topLeft:
+		return left, top
+	case gmath.Pivot.topCenter:
+		return centerX, top
+	case gmath.Pivot.topRight:
+		return right, top
+	case gmath.Pivot.centerLeft:
+		return left, centerY
+	case gmath.Pivot.centerCenter:
+		return centerX, centerY
+	case gmath.Pivot.centerRight:
+		return right, centerY
+	case gmath.Pivot.bottomLeft:
+		return left, bottom
+	case gmath.Pivot.bottomCenter:
+		return centerX, bottom
+	case gmath.Pivot.bottomRight:
+		return right, bottom
 	}
-
-	ndcX := (x / (f32(windowWidth) * 0.5)) - 1.0
-	ndcY := (y / (f32(windowHeight) * 0.5)) - 1.0
-
-	mouseNdc := gmath.Vec2{ndcX, ndcY}
-
-	mouseWorld := gmath.Vec4{mouseNdc.x, mouseNdc.y, 0, 1}
-
-	mouseWorld = linalg.inverse(getScreenSpaceProj()) * mouseWorld
-	x = mouseWorld.x
-	y = mouseWorld.y
-
-	return
+	return 0, 0
 }
 
 isActionPressed :: proc(action: InputAction) -> bool {
@@ -117,12 +112,7 @@ consumeActionReleased :: proc(action: InputAction) {
 }
 
 keyFromAction :: proc(action: InputAction) -> KeyCode {
-	// key, found := actionMap[action]
-	// if !found {
-	// 	log.debugf("Action %v not bound to any key.", action)
-	// }
-	// return key
-	return actionMap[action] //TODO: make a check without using a map here
+	return actionMap[action]
 }
 
 getInputVector :: proc() -> gmath.Vec2 {
