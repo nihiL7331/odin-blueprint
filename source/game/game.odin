@@ -23,7 +23,7 @@ appFrame :: proc() {
 		// ui space example
 		drawFrame.reset.coordSpace = camera.getScreenSpace()
 
-		x, y := camera.screenPivot(gmath.Pivot.topRight)
+		x, y := utils.screenPivot(gmath.Pivot.topRight)
 
 		x -= 2
 		y -= 2
@@ -60,6 +60,8 @@ gameUpdate :: proc() {
 		thing1 := entityCreate(.thing1)
 		thing1.pos.x = 30
 		coreContext.gameState.playerHandle = player.handle
+
+		camera.initCamera()
 	}
 
 	rebuildScratchHelpers()
@@ -73,12 +75,8 @@ gameUpdate :: proc() {
 		e.updateProc(e)
 	}
 
-	utils.animateToTargetVec2(
-		&coreContext.gameState.camPos,
-		getPlayer().pos,
-		coreContext.deltaTime,
-		rate = 10,
-	)
+	camera.followCamera(getPlayer().pos)
+	camera.updateCamera()
 }
 
 gameDraw :: proc() {
