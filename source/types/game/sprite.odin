@@ -12,18 +12,6 @@ Sprite :: struct {
 	atlasUvs:      gmath.Vec4,
 }
 
-SpriteName :: enum {
-	nil,
-	bald_logo,
-	fmod_logo,
-	player_still,
-	shadow_medium,
-	bg_repeat_tex0,
-	player_death,
-	player_run,
-	player_idle,
-} //TODO: make it so it autogenerates from build using file names
-
 spriteData: [SpriteName]SpriteData = #partial {
 	SpriteName.player_idle = {frameCount = 2},
 	SpriteName.player_run = {frameCount = 3},

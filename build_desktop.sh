@@ -23,6 +23,7 @@ sokol-shdc/$SHDC_PLATFORM$SHDC_ARCH/sokol-shdc -i source/shaders/shader.glsl -o 
 
 OUT_DIR="build/desktop"
 mkdir -p $OUT_DIR
+odin run ./generateAssets.odin -file
 odin build source -vet -strict-style -out:$OUT_DIR/game_desktop.bin
 cp -R ./assets/ ./$OUT_DIR/assets/
 echo "Desktop build created in ${OUT_DIR}"
