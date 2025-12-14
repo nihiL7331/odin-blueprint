@@ -73,3 +73,5 @@ source/sokol/time/sokol_time_macos_x64_metal_debug.a
 source/sokol/time/sokol_time_macos_x64_metal_release.a
 source/shader.odin
 source/systems/render/shader.odin
+source/types/game/generated_font.odin
+source/types/game/generated_sprite.odin

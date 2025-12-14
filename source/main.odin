@@ -26,6 +26,22 @@
 // |-> you should use heap instead of stack due to stack size constraints on web
 // (stack size can be modified, but its recommended to use more heap instead)
 // |-> avoid @(deferred_out) if possible, send pointers instead
+//
+// TODO:
+// - microui implementation
+// - miniaudio/fmod implementation
+// - separate shadow handling (to avoid shadow stacking)
+// - particle system
+// - asset hot reloading
+// - spatial hash grid for collisions
+// - scene/state manager
+// - tweening system
+// - web localstorage implementation
+// - debug console (microui)
+// - save/load system
+// - configuration/settings system
+// - steamworks support
+// - multiple font support
 
 package main
 
