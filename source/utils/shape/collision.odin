@@ -6,8 +6,8 @@ import "core:math/linalg"
 import "../../types/gmath"
 
 collide :: proc(a, b: gmath.Shape) -> (colliding: bool, depth: gmath.Vec2) {
-	if a == {} || b == {} {
-		return false, 0.0
+	if a == nil || b == nil {
+		return false, {}
 	}
 
 	switch aShape in a {
@@ -19,18 +19,16 @@ collide :: proc(a, b: gmath.Shape) -> (colliding: bool, depth: gmath.Vec2) {
 			return rectCollideCircle(aShape, bShape)
 		}
 	case gmath.Circle:
-		#partial switch bShape in b {
+		switch bShape in b {
 		case gmath.Rect:
-			return rectCollideCircle(bShape, aShape)
+			hit, normal := rectCollideCircle(bShape, aShape)
+			return hit, -normal
+		case gmath.Circle:
+			return circleCollideCircle(aShape, bShape)
 		}
 	}
 
-	assert(false, "unsupported shape collision")
 	return false, {}
-}
-
-rectContains :: proc(rect: gmath.Vec4, point: gmath.Vec2) -> bool {
-	return (point.x >= rect.x) && (point.x <= rect.z) && (point.y >= rect.y) && (point.y <= rect.w)
 }
 
 rectCollideCircle :: proc(aabb: gmath.Rect, circle: gmath.Circle) -> (bool, gmath.Vec2) {
@@ -39,12 +37,44 @@ rectCollideCircle :: proc(aabb: gmath.Rect, circle: gmath.Circle) -> (bool, gmat
 		math.clamp(circle.pos.y, aabb.y, aabb.w),
 	}
 
-	distance := linalg.length(closestPoint - circle.pos)
+	diff := circle.pos - closestPoint
+	distanceSquared := linalg.length2(diff)
+	if distanceSquared > (circle.radius * circle.radius) {
+		return false, {}
+	}
 
-	return distance <= circle.radius, {}
+	distance := math.sqrt(distanceSquared)
+	if distance == 0 {
+		return true, {circle.radius, 0}
+	}
+
+	penetrationDepth := circle.radius - distance
+	normal := diff / distance
+
+	return true, normal * penetrationDepth
 }
 
-rectCollideRect :: proc(a: gmath.Rect, b: gmath.Rect) -> (bool, gmath.Vec2) {
+circleCollideCircle :: proc(a, b: gmath.Circle) -> (bool, gmath.Vec2) {
+	diff := a.pos - b.pos
+	distanceSquared := linalg.length2(diff)
+	radiusSum := a.radius + b.radius
+
+	if distanceSquared >= (radiusSum * radiusSum) {
+		return false, {}
+	}
+
+	distance := math.sqrt(distanceSquared)
+	if distance == 0 {
+		return true, {radiusSum, 0}
+	}
+
+	penetrationDepth := radiusSum - distance
+	normal := diff / distance
+
+	return true, normal * penetrationDepth
+}
+
+rectCollideRect :: proc(a, b: gmath.Rect) -> (bool, gmath.Vec2) {
 	dx := (a.z + a.x) / 2 - (b.z + b.x) / 2
 	dy := (a.w + a.y) / 2 - (b.w + b.y) / 2
 
@@ -52,7 +82,7 @@ rectCollideRect :: proc(a: gmath.Rect, b: gmath.Rect) -> (bool, gmath.Vec2) {
 	overlapY := (a.w - a.y) / 2 + (b.w - b.y) / 2 - abs(dy)
 
 	if overlapX <= 0 || overlapY <= 0 {
-		return false, gmath.Vec2{}
+		return false, {}
 	}
 
 	penetration := gmath.Vec2{}
