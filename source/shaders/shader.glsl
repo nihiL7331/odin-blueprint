@@ -3,9 +3,9 @@
 // "v" vertex out/fragment in (varyings)
 // "o" fragment out (outputs)
 // "u" for cpu called (uniforms)
-@header package main
-@header import sg "sokol/gfx"
-@header import "types/gmath"
+@header package render
+@header import sg "../../sokol/gfx"
+@header import "../../types/gmath"
 
 @ctype vec4 gmath.Vec4
 @ctype mat4 gmath.Mat4

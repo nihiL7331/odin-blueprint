@@ -1,10 +1,5 @@
 #+build wasm32, wasm64p32
-// Implementations of `read_entire_file` and `write_entire_file` using the libc
-// stuff emscripten exposes. You can read the files that get bundled by
-// `--preload-file assets` in `build_web` script.
-
-
-package web_support
+package web
 
 import "base:runtime"
 import "core:c"

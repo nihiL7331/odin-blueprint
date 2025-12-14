@@ -1,20 +1,21 @@
-package main
+package render
 
+import stbi "../../libs/stb/image"
+import stbrp "../../libs/stb/rect_pack"
+import tt "../../libs/stb/truetype"
 import "core:fmt"
 import "core:log"
 import "core:mem"
-import stbi "libs/stb/image"
-import stbrp "libs/stb/rect_pack"
-import tt "libs/stb/truetype"
 
-import sg "sokol/gfx"
-import sglue "sokol/glue"
-import slog "sokol/log"
+import sg "../../sokol/gfx"
+import sglue "../../sokol/glue"
+import slog "../../sokol/log"
 
-import "types/game"
-import "types/gfx"
-import "types/gmath"
-import "utils"
+import io "../../platform"
+import "../../types/game"
+import "../../types/gfx"
+import "../../types/gmath"
+import "../../utils"
 
 RenderState :: struct {
 	passAction: sg.Pass_Action,
@@ -28,6 +29,32 @@ _drawFrame: gfx.DrawFrame
 
 getDrawFrame :: proc() -> ^gfx.DrawFrame {
 	return &_drawFrame
+}
+
+getFrameCount :: proc(sprite: game.SpriteName) -> int {
+	frameCount := game.spriteData[sprite].frameCount
+	if frameCount == 0 {
+		frameCount = 1
+	}
+	return frameCount
+}
+
+getSpriteOffset :: proc(sprite: game.SpriteName) -> (offset: gmath.Vec2, pivot: gmath.Pivot) {
+	data := game.spriteData[sprite]
+	offset = data.offset
+	pivot = data.pivot
+	return
+}
+
+
+getSpriteCenterMass :: proc(sprite: game.SpriteName) -> gmath.Vec2 {
+	size := getSpriteSize(sprite)
+	offset, pivot := getSpriteOffset(sprite)
+
+	center := size * utils.scaleFromPivot(pivot)
+	center -= offset
+
+	return center
 }
 
 MAX_QUADS :: 8192
@@ -224,7 +251,7 @@ loadSpritesIntoAtlas :: proc() {
 		if imgName == .nil do continue
 
 		path := fmt.tprint(imgDir, imgName, ".png", sep = "")
-		pngData, succ := read_entire_file(path)
+		pngData, succ := io.read_entire_file(path)
 		assert(succ, fmt.tprint(path, "not found."))
 
 		defer delete(pngData)
@@ -349,7 +376,7 @@ loadFont :: proc() {
 	bitmap, _ := mem.alloc(fontBitmapW * fontBitmapH)
 	fontHeight := 15
 	path := "assets/fonts/alagard.ttf"
-	ttfData, _ := read_entire_file(path)
+	ttfData, _ := io.read_entire_file(path)
 	assert(ttfData != nil, "Failed to read font data.")
 
 	ret := tt.BakeFontBitmap(

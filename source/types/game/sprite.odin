@@ -24,6 +24,11 @@ SpriteName :: enum {
 	player_idle,
 } //TODO: make it so it autogenerates from build using file names
 
+spriteData: [SpriteName]SpriteData = #partial {
+	SpriteName.player_idle = {frameCount = 2},
+	SpriteName.player_run = {frameCount = 3},
+}
+
 QuadFlags :: enum u8 {
 	backgroundPixels = (1 << 0),
 	flag2            = (1 << 1),

@@ -1,11 +1,11 @@
-package main
+package render
 
-import "types/color"
-import "types/game"
-import "types/gmath"
-import "utils"
+import "../../types/color"
+import "../../types/game"
+import "../../types/gmath"
+import "../../utils"
 
-import tt "libs/stb/truetype"
+import tt "../../libs/stb/truetype"
 
 drawText :: drawTextWithDropShadow
 

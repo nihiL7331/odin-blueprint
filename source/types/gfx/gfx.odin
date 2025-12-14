@@ -20,8 +20,9 @@ DrawFrame :: struct {
 }
 
 CoordSpace :: struct {
-	proj:   gmath.Mat4,
-	camera: gmath.Mat4,
+	proj:     gmath.Mat4,
+	camera:   gmath.Mat4,
+	viewProj: gmath.Mat4,
 }
 
 Quad :: [4]Vertex

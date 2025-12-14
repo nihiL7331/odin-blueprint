@@ -1,24 +1,17 @@
-/*
-This allocator uses the malloc, calloc, free and realloc procs that emscripten
-exposes in order to allocate memory. Just like Odin's default heap allocator
-this uses proper alignment, so that maps and simd works.
-*/
-
 #+build wasm32, wasm64p32
+package web
 
-package web_support
-
-import "core:mem"
-import "core:c"
 import "base:intrinsics"
+import "core:c"
+import "core:mem"
 
 // This will create bindings to emscripten's implementation of libc
 // memory allocation features.
 @(default_calling_convention = "c")
-foreign {
-	calloc  :: proc(num, size: c.size_t) -> rawptr ---
-	free    :: proc(ptr: rawptr) ---
-	malloc  :: proc(size: c.size_t) -> rawptr ---
+foreign _ {
+	calloc :: proc(num, size: c.size_t) -> rawptr ---
+	free :: proc(ptr: rawptr) ---
+	malloc :: proc(size: c.size_t) -> rawptr ---
 	realloc :: proc(ptr: rawptr, size: c.size_t) -> rawptr ---
 }
 
@@ -32,26 +25,36 @@ emscripten_allocator_proc :: proc(
 	size, alignment: int,
 	old_memory: rawptr,
 	old_size: int,
-	location := #caller_location
-) -> (data: []byte, err: mem.Allocator_Error)  {
+	location := #caller_location,
+) -> (
+	data: []byte,
+	err: mem.Allocator_Error,
+) {
 	// These aligned alloc procs are almost indentical those in
 	// `_heap_allocator_proc` in `core:os`. Without the proper alignment you
 	// cannot use maps and simd features.
 
-	aligned_alloc :: proc(size, alignment: int, zero_memory: bool, old_ptr: rawptr = nil) -> ([]byte, mem.Allocator_Error) {
+	aligned_alloc :: proc(
+		size, alignment: int,
+		zero_memory: bool,
+		old_ptr: rawptr = nil,
+	) -> (
+		[]byte,
+		mem.Allocator_Error,
+	) {
 		a := max(alignment, align_of(rawptr))
 		space := size + a - 1
 
 		allocated_mem: rawptr
 		if old_ptr != nil {
 			original_old_ptr := mem.ptr_offset((^rawptr)(old_ptr), -1)^
-			allocated_mem = realloc(original_old_ptr, c.size_t(space+size_of(rawptr)))
+			allocated_mem = realloc(original_old_ptr, c.size_t(space + size_of(rawptr)))
 		} else if zero_memory {
 			// calloc automatically zeros memory, but it takes a number + size
 			// instead of just size.
-			allocated_mem = calloc(c.size_t(space+size_of(rawptr)), 1)
+			allocated_mem = calloc(c.size_t(space + size_of(rawptr)), 1)
 		} else {
-			allocated_mem = malloc(c.size_t(space+size_of(rawptr)))
+			allocated_mem = malloc(c.size_t(space + size_of(rawptr)))
 		}
 		aligned_mem := rawptr(mem.ptr_offset((^u8)(allocated_mem), size_of(rawptr)))
 
@@ -74,7 +77,15 @@ emscripten_allocator_proc :: proc(
 		}
 	}
 
-	aligned_resize :: proc(p: rawptr, old_size: int, new_size: int, new_alignment: int) -> ([]byte, mem.Allocator_Error) {
+	aligned_resize :: proc(
+		p: rawptr,
+		old_size: int,
+		new_size: int,
+		new_alignment: int,
+	) -> (
+		[]byte,
+		mem.Allocator_Error,
+	) {
 		if p == nil {
 			return nil, nil
 		}

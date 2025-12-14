@@ -36,9 +36,12 @@ import sapp "sokol/app"
 import sg "sokol/gfx"
 import slog "sokol/log"
 
+import gameapp "game"
+import "platform/web"
+import "systems/input"
+import "systems/render"
 import "types/game"
 import "utils"
-import "web"
 
 _ :: web
 
@@ -57,7 +60,7 @@ main :: proc() {
 		context.allocator = web.emscripten_allocator()
 
 		// Make temp allocator use new `context.allocator` by re-initing it.
-		runtime.init_global_temporary_allocator(32 * runtime.Megabyte)
+		runtime.init_global_temporary_allocator(1 * runtime.Megabyte)
 	}
 
 	context.logger = log.create_console_logger(
@@ -69,15 +72,16 @@ main :: proc() {
 	desc: sapp.Desc
 	desc.init_cb = init
 	desc.frame_cb = frame
+	desc.event_cb = event
 	desc.cleanup_cb = cleanup
-	desc.event_cb = eventCallback
-	desc.width = i32(windowWidth)
-	desc.height = i32(windowHeight)
+	desc.width = i32(game.windowWidth)
+	desc.height = i32(game.windowHeight)
 	desc.sample_count = 4
-	desc.window_title = WINDOW_TITLE
+	desc.window_title = gameapp.WINDOW_TITLE
 	desc.icon.sokol_default = true
 	desc.logger.func = slog.func
 	desc.html5_update_document_title = true
+	desc.high_dpi = true
 
 	sapp.run(desc)
 }
@@ -88,13 +92,14 @@ init :: proc "c" () {
 
 	_actualGameState = new(game.GameState)
 
-	windowResizeCallback = proc(width, height: int) {
-		windowWidth = width
-		windowHeight = height
-		log.info("window resized")
-	}
+	// we instantly update windowWidth and windowHeight to fix scale issues on web
+	w := sapp.width()
+	h := sapp.height()
+	game.windowWidth = int(w)
+	game.windowHeight = int(h)
 
-	renderInit()
+	input.initState()
+	render.renderInit()
 }
 
 frameTime: f64
@@ -118,19 +123,29 @@ frame :: proc "c" () {
 
 	coreContext.deltaTime = f32(frameTime)
 	coreContext.gameState = _actualGameState
-	state = &_actualInputState
 
-	if keyPressed(.ENTER) && keyDown(.LEFT_ALT) {
+	if input.keyPressed(.ENTER) && input.keyDown(.LEFT_ALT) {
 		sapp.toggle_fullscreen()
 	}
 
-	coreRenderFrameStart()
-	appFrame()
-	coreRenderFrameEnd()
+	render.coreRenderFrameStart()
+	gameapp.appFrame()
+	render.coreRenderFrameEnd()
 
-	resetInputState(state)
+	input.resetInputState(input.state)
 
 	free_all(context.temp_allocator)
+}
+
+event :: proc "c" (e: ^sapp.Event) {
+	context = odinContext
+
+	if e.type == .RESIZED {
+		game.windowWidth = int(e.window_width)
+		game.windowHeight = int(e.window_height)
+	}
+
+	input.inputEventCallback(e)
 }
 
 cleanup :: proc "c" () {

@@ -1,12 +1,10 @@
-package main
+package render
 
-import "core:math/linalg"
-
-import "types/color"
-import "types/game"
-import "types/gmath"
-import "utils"
-import "utils/shape"
+import "../../types/color"
+import "../../types/game"
+import "../../types/gmath"
+import "../../utils"
+import "../../utils/shape"
 
 drawSprite :: proc(
 	pos: gmath.Vec2,
@@ -217,10 +215,7 @@ drawRectXForm :: proc(
 
 	assert(drawFrame.reset.coordSpace != {}, "No coord space set.")
 
-	model := xForm
-	view := linalg.inverse(drawFrame.reset.coordSpace.camera)
-	projection := drawFrame.reset.coordSpace.proj
-	localToClipSpace := projection * view * model
+	localToClipSpace := drawFrame.reset.coordSpace.viewProj * xForm
 
 	{
 		if cropTop != 0.0 {
