@@ -57,6 +57,8 @@ gameUpdate :: proc() {
 
 	if coreContext.gameState.ticks == 0 {
 		player := entityCreate(.player)
+		thing1 := entityCreate(.thing1)
+		thing1.pos.x = 30
 		coreContext.gameState.playerHandle = player.handle
 	}
 
@@ -104,8 +106,6 @@ gameDraw :: proc() {
 
 	{
 		drawFrame.reset.coordSpace = camera.getWorldSpace()
-
-		render.drawSprite({10, 10}, game.SpriteName.player_still)
 
 		render.drawText(
 			{0, -50},

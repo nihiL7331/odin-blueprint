@@ -46,4 +46,16 @@ setupPlayer :: proc(e: ^game.Entity) {
 
 setupThing1 :: proc(using e: ^game.Entity) {
 	e.kind = game.EntityKind.thing1
+
+	e.drawOffset = gmath.Vec2{0.5, 5}
+	e.drawPivot = gmath.Pivot.bottomCenter
+
+	e.updateProc = proc(e: ^game.Entity) {
+		entitySetAnimation(e, .player_idle, 0.3)
+	}
+
+	e.drawProc = proc(e: ^game.Entity) {
+		render.drawSprite(e.pos, .shadow_medium, col = {1, 1, 1, 0.2}, zLayer = game.ZLayer.shadow)
+		drawEntityDefault(e)
+	}
 }
