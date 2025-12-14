@@ -64,7 +64,7 @@ gameUpdate :: proc() {
 
 	rebuildScratchHelpers()
 
-	for handle in getAllEnts() {
+	for handle in getAllEntities() {
 		e := entityFromHandle(handle)
 
 		updateEntityAnimation(e)
@@ -117,7 +117,7 @@ gameDraw :: proc() {
 			zLayer = game.ZLayer.background,
 		)
 
-		for handle in getAllEnts() {
+		for handle in getAllEntities() {
 			e := entityFromHandle(handle)
 			if e.drawProc == nil do continue
 			e.drawProc(e)

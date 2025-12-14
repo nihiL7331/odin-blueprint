@@ -10,7 +10,7 @@ import "../utils"
 
 _zeroEntity: game.Entity
 
-getAllEnts :: proc() -> []game.EntityHandle {
+getAllEntities :: proc() -> []game.EntityHandle {
 	return utils.getCoreContext().gameState.scratch.allEntities
 }
 
