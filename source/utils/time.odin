@@ -1,6 +1,7 @@
 package utils
 
 import utils "."
+import "core:time"
 
 appNow :: utils.secondsSinceInit
 
@@ -17,4 +18,13 @@ timeSince :: proc(time: f64) -> f32 {
 		return 99999999.0
 	}
 	return f32(now() - time)
+}
+
+initTime: time.Time // this time doesn't stop compared to coreContext.gameState.gameTimeElapsed
+secondsSinceInit :: proc() -> f64 {
+	if initTime._nsec == 0 {
+		initTime = time.now()
+		return 0
+	}
+	return time.duration_seconds(time.since(initTime))
 }

@@ -2,7 +2,6 @@ package utils
 
 import "core:math"
 import "core:math/linalg"
-import "core:time"
 
 import "../types/gmath"
 
@@ -78,13 +77,4 @@ animateToTargetVec2 :: proc(
 
 almostEquals :: proc(a: f32, b: f32, epsilon: f32 = 0.001) -> bool {
 	return abs(a - b) <= epsilon
-}
-
-initTime: time.Time
-secondsSinceInit :: proc() -> f64 {
-	if initTime._nsec == 0 {
-		initTime = time.now()
-		return 0
-	}
-	return time.duration_seconds(time.since(initTime))
 }
