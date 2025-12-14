@@ -171,9 +171,13 @@ coreRenderFrameEnd :: proc() {
 		count := len(quadsInLayer)
 		if count == 0 do continue
 
-		if quadIndex + count > MAX_QUADS {
-			count = MAX_QUADS - quadIndex
+		spaceLeft := MAX_QUADS - quadIndex
+		if count > spaceLeft {
+			count = spaceLeft
+			log.warn("Quad buffer full.")
 		}
+
+		if count <= 0 do break
 
 		destPtr := &actualQuadData[quadIndex]
 		srcPtr := raw_data(quadsInLayer)
