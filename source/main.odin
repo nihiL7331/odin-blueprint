@@ -112,6 +112,8 @@ init :: proc "c" () {
 
 	coreContext := core.getCoreContext()
 	_actualGameState = new(game.GameState)
+	_actualGameState.entities = new(game.EntityStorage)
+	_actualGameState.world = new(game.WorldState)
 	coreContext.gameState = _actualGameState
 
 	// we instantly update windowWidth and windowHeight to fix scale issues on web
@@ -182,6 +184,8 @@ cleanup :: proc "c" () {
 
 	sg.shutdown()
 
+	free(_actualGameState.entities)
+	free(_actualGameState.world)
 	free(_actualGameState)
 
 	when IS_WEB {

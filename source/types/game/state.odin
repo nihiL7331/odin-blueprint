@@ -3,8 +3,8 @@ package game_types
 import "../gmath"
 
 GameState :: struct {
-	time:     ^TimeState,
-	scratch:  ^ScratchState,
+	time:     TimeState,
+	scratch:  ScratchState,
 	entities: ^EntityStorage,
 	world:    ^WorldState,
 }
@@ -29,4 +29,6 @@ EntityStorage :: struct {
 WorldState :: struct {
 	playerHandle: EntityHandle,
 	camPos:       gmath.Vec2,
+	currentScene: ^Scene,
+	nextScene:    ^Scene,
 }
