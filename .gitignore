@@ -75,3 +75,13 @@ source/shader.odin
 source/systems/render/shader.odin
 source/types/game/generated_font.odin
 source/types/game/generated_sprite.odin
+source/libs/sokol/time
+source/libs/sokol/shape
+source/libs/sokol/log
+source/libs/sokol/glue
+source/libs/sokol/gl
+source/libs/sokol/gfx
+source/libs/sokol/debugtext
+source/libs/sokol/audio
+source/libs/sokol/app
+source/core/render/shader.odin
