@@ -111,6 +111,7 @@ init :: proc "c" () {
 
 	coreContext := core.getCoreContext()
 	_actualGameState = new(game.GameState)
+	coreContext.gameState = _actualGameState
 
 	// we instantly update windowWidth and windowHeight to fix scale issues on web
 	coreContext.windowWidth = sapp.width()
@@ -119,6 +120,7 @@ init :: proc "c" () {
 
 	input.initState()
 	render.init()
+	gameapp.init()
 }
 
 frameTime: f64
@@ -141,14 +143,20 @@ frame :: proc "c" () {
 	coreContext := core.getCoreContext()
 
 	coreContext.deltaTime = f32(frameTime)
-	coreContext.gameState = _actualGameState
+	coreContext.gameState.scratch = {}
 
 	if input.keyPressed(.ENTER) && input.keyDown(.LEFT_ALT) {
 		sapp.toggle_fullscreen()
 	}
 
+	coreContext.gameState.gameTimeElapsed += f64(coreContext.deltaTime)
+	coreContext.gameState.ticks += 1
+
 	render.coreRenderFrameStart()
-	gameapp.appFrame()
+	gameapp.update()
+
+
+	gameapp.draw()
 	render.coreRenderFrameEnd()
 
 	input.resetInputState(input.state)
@@ -172,6 +180,8 @@ cleanup :: proc "c" () {
 	context = odinContext
 
 	sg.shutdown()
+
+	free(_actualGameState)
 
 	when IS_WEB {
 		runtime._cleanup_runtime()

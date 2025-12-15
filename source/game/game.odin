@@ -1,11 +1,15 @@
+// This file is the entry point for all gameplay code.
+
 package game
 
 import "../core"
 import "../core/render"
 import "../systems/camera"
+import "../systems/entities"
 import "../types/game"
 import "../types/gmath"
 import "../utils"
+import "entityData"
 
 import "core:fmt"
 import "core:math/linalg"
@@ -13,74 +17,39 @@ import "core:math/linalg"
 VERSION :: "v0.0.0"
 WINDOW_TITLE :: "Blueprint"
 
-appFrame :: proc() {
+init :: proc() {
 	coreContext := core.getCoreContext()
-	drawFrame := render.getDrawFrame()
 
-	// right now we are just calling the game update, but in future this is where you'd do a big
-	// "UX" switch for startup splash, main menu, settings, in-game, etc
+	player := entityData.spawnPlayer()
+	coreContext.gameState.playerHandle = player.handle
 
-	{
-		// ui space example
-		drawFrame.reset.coordSpace = camera.getScreenSpace()
+	entityData.spawnThing()
 
-		x, y := utils.screenPivot(gmath.Pivot.topRight)
-
-		x -= 2
-		y -= 2
-
-		fpsText := fmt.tprintf("FPS: %.2f", 1.0 / coreContext.deltaTime)
-
-		render.drawText(
-			{x, y},
-			fpsText,
-			zLayer = game.ZLayer.ui,
-			pivot = gmath.Pivot.topRight,
-			scale = 0.5,
-		)
-	}
-
-	gameUpdate()
-	gameDraw()
+	camera.init()
 }
 
-gameUpdate :: proc() {
+update :: proc() {
 	coreContext := core.getCoreContext()
-	drawFrame := render.getDrawFrame()
 
-	coreContext.gameState.scratch = {}
-	defer {
-		coreContext.gameState.gameTimeElapsed += f64(coreContext.deltaTime)
-		coreContext.gameState.ticks += 1
-	}
+	entities.updateAll()
 
-	drawFrame.reset.coordSpace = camera.getWorldSpace()
-
-	if coreContext.gameState.ticks == 0 {
-		player := entityCreate(.player)
-		thing1 := entityCreate(.thing1)
-		thing1.pos.x = 30
-		coreContext.gameState.playerHandle = player.handle
-
-		camera.initCamera()
-	}
-
-	rebuildScratchHelpers()
-
-	for handle in getAllEntities() {
-		e := entityFromHandle(handle)
-
-		updateEntityAnimation(e)
-
-		if e.updateProc == nil do continue
-		e.updateProc(e)
-	}
-
-	camera.followCamera(getPlayer().pos)
-	camera.updateCamera()
+	player := entities.entityFromHandle(coreContext.gameState.playerHandle)
+	camera.follow(player.pos)
+	camera.update()
 }
 
-gameDraw :: proc() {
+draw :: proc() {
+	render.getDrawFrame().reset.sortedLayers = {.playspace, .shadow}
+
+	drawBackgroundLayer()
+
+	render.setCoordSpace(camera.getWorldSpace())
+	entities.drawAll()
+
+	drawUiLayer()
+}
+
+drawBackgroundLayer :: proc() {
 	drawFrame := render.getDrawFrame()
 
 	drawFrame.reset.shaderData.ndcToWorldXForm =
@@ -88,38 +57,27 @@ gameDraw :: proc() {
 	drawFrame.reset.shaderData.bgRepeatTexAtlasUv = render.atlasUvFromSprite(
 		game.SpriteName.bg_repeat_tex0,
 	)
+	render.setCoordSpace()
 
-	drawFrame.reset.sortedLayers = {.playspace, .shadow}
+	render.drawRect(
+		gmath.Rect{-1, -1, 1, 1},
+		flags = game.QuadFlags.backgroundPixels,
+		zLayer = game.ZLayer.background,
+	)
+}
 
-	{
-		drawFrame.reset.coordSpace = {
-			proj     = gmath.Mat4(1),
-			camera   = gmath.Mat4(1),
-			viewProj = gmath.Mat4(1),
-		}
+drawUiLayer :: proc() {
+	coreContext := core.getCoreContext()
 
-		render.drawRect(
-			gmath.Rect{-1, -1, 1, 1},
-			flags = game.QuadFlags.backgroundPixels,
-			zLayer = game.ZLayer.background,
-		)
-	}
+	render.setCoordSpace(camera.getScreenSpace())
 
-	{
-		drawFrame.reset.coordSpace = camera.getWorldSpace()
-
-		render.drawText(
-			{0, -50},
-			"odin on the web",
-			pivot = gmath.Pivot.bottomCenter,
-			dropShadowCol = {},
-			zLayer = game.ZLayer.background,
-		)
-
-		for handle in getAllEntities() {
-			e := entityFromHandle(handle)
-			if e.drawProc == nil do continue
-			e.drawProc(e)
-		}
-	}
+	x, y := utils.screenPivot(gmath.Pivot.topRight)
+	fpsText := fmt.tprintf("FPS: %.2f", 1.0 / coreContext.deltaTime)
+	render.drawText(
+		{x - 2, y - 2},
+		fpsText,
+		zLayer = game.ZLayer.ui,
+		pivot = gmath.Pivot.topRight,
+		scale = 0.5,
+	)
 }

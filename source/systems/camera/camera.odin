@@ -75,16 +75,16 @@ getScreenSpaceProj :: proc() -> gmath.Mat4 {
 	return linalg.matrix_ortho3d_f32(viewLeft, viewRight, 0, viewHeight, -1, 1)
 }
 
-followCamera :: proc(target: gmath.Vec2, rate: f32 = 10.0) {
+follow :: proc(target: gmath.Vec2, rate: f32 = 10.0) {
 	_camera.target = target
 	_camera.followRate = rate
 }
 
-initCamera :: proc() {
+init :: proc() {
 	_camera = defaultCamera()
 }
 
-updateCamera :: proc() {
+update :: proc() {
 	coreContext := core.getCoreContext()
 
 	if _camera.followRate > 0 {

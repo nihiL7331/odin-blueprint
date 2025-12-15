@@ -8,7 +8,7 @@ vec3 rgbToHsv(vec3 c) {
   vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
 
   float d = q.x - min(q.w, q.y);
-  float e = 1.0e-10; // 0.0000000001
+  float e = 1.0e-10;
   return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
@@ -28,10 +28,6 @@ vec3 hexToRgb(int hex) {
 
 bool almostEquals(vec3 a, vec3 b, float epsilon) {
   return all(lessThan(abs(a - b), vec3(epsilon)));
-}
-
-float square(float x) {
-  return x * x;
 }
 
 vec2 localUvToAtlasUv(vec2 localUv, vec4 atlasRect) {

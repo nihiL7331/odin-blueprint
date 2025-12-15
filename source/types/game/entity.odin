@@ -12,7 +12,7 @@ EntityHandle :: struct {
 EntityKind :: enum {
 	nil,
 	player,
-	thing1,
+	thing,
 }
 
 Entity :: struct {

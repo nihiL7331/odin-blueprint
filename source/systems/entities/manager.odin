@@ -1,15 +1,18 @@
-package game
+package entities
 
 import "core:fmt"
 
-import "../core"
-import "../core/render"
-import "../types/color"
-import "../types/game"
-import "../types/gmath"
-import "../utils"
+import "../../core"
+import "../../core/render"
+import "../../types/color"
+import "../../types/game"
+import "../../types/gmath"
+import "../../utils"
 
+@(private)
 _zeroEntity: game.Entity
+_noopUpdate :: proc(e: ^game.Entity) {}
+_noopDraw :: proc(e: ^game.Entity) {}
 
 getAllEntities :: proc() -> []game.EntityHandle {
 	return core.getCoreContext().gameState.scratch.allEntities
@@ -26,22 +29,10 @@ entityIsValidPtr :: proc(entity: ^game.Entity) -> bool {
 	return entity != nil && entityIsValid(entity^)
 }
 
-entitySetup :: proc(e: ^game.Entity, kind: game.EntityKind) {
-	e.drawProc = drawEntityDefault
-	e.drawPivot = gmath.Pivot.bottomCenter
-
-	switch kind {
-	case .nil:
-		assert(false, "tried to setup .nil kind entity")
-	case game.EntityKind.player:
-		setupPlayer(e)
-	case game.EntityKind.thing1:
-		setupThing1(e)
-	}
-}
-
 entityInitCore :: proc() {
-	entitySetup(&_zeroEntity, .nil)
+	_zeroEntity.kind = .nil
+	_zeroEntity.updateProc = _noopUpdate
+	_zeroEntity.drawProc = _noopDraw
 }
 
 entityFromHandle :: proc(
@@ -80,7 +71,7 @@ rebuildScratchHelpers :: proc() {
 	coreContext.gameState.scratch.allEntities = allEnts[:]
 }
 
-entityCreate :: proc(kind: game.EntityKind) -> ^game.Entity {
+create :: proc(kind: game.EntityKind) -> ^game.Entity {
 	coreContext := core.getCoreContext()
 	index := -1
 	if len(coreContext.gameState.entityFreeList) > 0 {
@@ -101,7 +92,10 @@ entityCreate :: proc(kind: game.EntityKind) -> ^game.Entity {
 	ent.handle.id = coreContext.gameState.latestEntityId + 1
 	coreContext.gameState.latestEntityId = ent.handle.id
 
-	entitySetup(ent, kind)
+	ent.kind = kind
+	ent.drawPivot = gmath.Pivot.bottomCenter
+	ent.drawProc = drawEntityDefault
+
 	fmt.assertf(ent.kind != nil, "Entity %v needs to define a kind during setup", kind)
 
 	return ent
@@ -175,7 +169,7 @@ drawSpriteEntity :: proc(
 	)
 }
 
-entitySetAnimation :: proc(
+setAnimation :: proc(
 	e: ^game.Entity,
 	sprite: game.SpriteName,
 	frameDuration: f32,
@@ -190,7 +184,7 @@ entitySetAnimation :: proc(
 	}
 }
 
-updateEntityAnimation :: proc(e: ^game.Entity) {
+updateAnimation :: proc(e: ^game.Entity) {
 	if e.frameDuration == 0 do return
 
 	frameCount := render.getFrameCount(e.sprite)
@@ -216,9 +210,30 @@ updateEntityAnimation :: proc(e: ^game.Entity) {
 	}
 }
 
-entityDestroy :: proc(e: ^game.Entity) {
+destroy :: proc(e: ^game.Entity) {
 	coreContext := core.getCoreContext()
 
 	append(&coreContext.gameState.entityFreeList, e.handle.index)
 	e^ = {}
+}
+
+updateAll :: proc() {
+	rebuildScratchHelpers()
+
+	for handle in getAllEntities() {
+		e := entityFromHandle(handle)
+
+		updateAnimation(e)
+
+		if e.updateProc == nil do continue
+		e.updateProc(e)
+	}
+}
+
+drawAll :: proc() {
+	for handle in getAllEntities() {
+		e := entityFromHandle(handle)
+		if e.drawProc == nil do continue
+		e.drawProc(e)
+	}
 }
