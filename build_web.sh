@@ -18,7 +18,7 @@ arm64*)
   ;;
 esac
 
-sokol-shdc/$SHDC_PLATFORM$SHDC_ARCH/sokol-shdc -i source/shaders/shader.glsl -o source/systems/render/shader.odin -l glsl430:metal_macos:hlsl5:glsl300es -f sokol_odin
+sokol-shdc/$SHDC_PLATFORM$SHDC_ARCH/sokol-shdc -i source/shaders/shader.glsl -o source/shaders/shader.odin -l glsl430:metal_macos:hlsl5:glsl300es -f sokol_odin
 
 # Point this to where you installed emscripten. Optional on systems that already
 # have `emcc` in the path.
