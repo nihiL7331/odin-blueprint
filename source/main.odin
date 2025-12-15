@@ -49,9 +49,9 @@ package main
 import "base:runtime"
 import "core:log"
 
-import sapp "sokol/app"
-import sg "sokol/gfx"
-import slog "sokol/log"
+import sapp "libs/sokol/app"
+import sg "libs/sokol/gfx"
+import slog "libs/sokol/log"
 
 import "core"
 import "core/input"

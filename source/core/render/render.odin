@@ -8,9 +8,9 @@ import "core:log"
 import "core:mem"
 import "core:slice"
 
-import sg "../../sokol/gfx"
-import sglue "../../sokol/glue"
-import slog "../../sokol/log"
+import sg "../../libs/sokol/gfx"
+import sglue "../../libs/sokol/glue"
+import slog "../../libs/sokol/log"
 
 import io "../../platform"
 import "../../types/game"

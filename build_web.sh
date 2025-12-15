@@ -42,7 +42,7 @@ cp $ODIN_PATH/core/sys/wasm/js/odin.js $OUT_DIR
 
 # Note how we link in the Sokol libs here. The Sokol bindings just link to
 # "env.o", which is the WASM environment.
-files="$OUT_DIR/game.wasm.o source/sokol/app/sokol_app_wasm_gl_release.a source/sokol/glue/sokol_glue_wasm_gl_release.a source/sokol/gfx/sokol_gfx_wasm_gl_release.a source/sokol/shape/sokol_shape_wasm_gl_release.a source/sokol/log/sokol_log_wasm_gl_release.a source/sokol/gl/sokol_gl_wasm_gl_release.a source/libs/stb/lib/stb_image_resize_wasm.o source/libs/stb/lib/stb_image_wasm.o source/libs/stb/lib/stb_image_write_wasm.o source/libs/stb/lib/stb_rect_pack_wasm.o source/libs/stb/lib/stb_truetype_wasm.o"
+files="$OUT_DIR/game.wasm.o source/libs/sokol/app/sokol_app_wasm_gl_release.a source/libs/sokol/glue/sokol_glue_wasm_gl_release.a source/libs/sokol/gfx/sokol_gfx_wasm_gl_release.a source/libs/sokol/shape/sokol_shape_wasm_gl_release.a source/libs/sokol/log/sokol_log_wasm_gl_release.a source/libs/sokol/gl/sokol_gl_wasm_gl_release.a source/libs/stb/lib/stb_image_resize_wasm.o source/libs/stb/lib/stb_image_wasm.o source/libs/stb/lib/stb_image_write_wasm.o source/libs/stb/lib/stb_rect_pack_wasm.o source/libs/stb/lib/stb_truetype_wasm.o"
 
 # index_template.html contains the javascript code that starts the program.
 flags="-sWASM_BIGINT -sWARN_ON_UNDEFINED_SYMBOLS=0 -sALLOW_MEMORY_GROWTH -sINITIAL_MEMORY=67108864 -sMAX_WEBGL_VERSION=2 -sASSERTIONS --shell-file source/platform/web/index.html --preload-file assets"

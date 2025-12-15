@@ -1,6 +1,6 @@
 package input
 
-import sapp "../../sokol/app"
+import sapp "../../libs/sokol/app"
 
 import "../../types/gmath"
 
