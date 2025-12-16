@@ -71,7 +71,7 @@ drawTextNoDropShadow :: proc(
 	}
 
 	//find size
-	totalSize: gmath.Vec2 // can't we use it to wrap?
+	totalSize: gmath.Vec2
 	for char, i in text {
 		advanceX: f32
 		advanceY: f32

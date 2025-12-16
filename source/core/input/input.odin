@@ -10,7 +10,7 @@ MAX_KEYCODES :: 512
 
 Input :: struct {
 	keys:             [MAX_KEYCODES]bit_set[InputFlag],
-	mouseX, mouseY:   f32,
+	mouseX, mouseY:   f32, //NOTE: getting it so often, might consider making a vec2 helper
 	scrollX, scrollY: f32,
 }
 

@@ -6,9 +6,7 @@ import "core:time"
 appNow :: secondsSinceInit
 
 now :: proc() -> f64 {
-	coreContext := core.getCoreContext()
-
-	return coreContext.gameState.time.gameTimeElapsed
+	return core.getCoreContext().gameState.time.gameTimeElapsed
 }
 endTimeUp :: proc(endTime: f64) -> bool {
 	return endTime == -1 ? false : now() >= endTime

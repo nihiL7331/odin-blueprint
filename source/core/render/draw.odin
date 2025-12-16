@@ -248,10 +248,10 @@ drawRectXForm :: proc(
 		}
 	}
 
-	bl := gmath.Vec2{0, 0}
-	tl := gmath.Vec2{0, size.y}
-	tr := gmath.Vec2{size.x, size.y}
-	br := gmath.Vec2{size.x, 0}
+	bottomLeft := gmath.Vec2{0, 0}
+	topLeft := gmath.Vec2{0, size.y}
+	topRight := gmath.Vec2{size.x, size.y}
+	bottomRight := gmath.Vec2{size.x, 0}
 
 	if texIndex == 0 && sprite == .nil {
 		texIndex = 255
@@ -259,7 +259,7 @@ drawRectXForm :: proc(
 
 	drawQuadProjected(
 		localToClipSpace,
-		{bl, tl, tr, br},
+		{bottomLeft, topLeft, topRight, bottomRight},
 		{col, col, col, col},
 		{uv.xy, uv.xw, uv.zw, uv.zy},
 		texIndex,
