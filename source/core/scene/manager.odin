@@ -8,15 +8,15 @@ import "core:log"
 
 
 @(private)
-_scenes: [game.SceneKind]game.Scene
+_scenes: [game.SceneName]game.Scene
 
 @(private)
 _getWorld :: proc() -> ^game.WorldState {
 	return core.getCoreContext().gameState.world
 }
 
-init :: proc(kind: game.SceneKind) {
-	if kind == game.SceneKind.None {
+init :: proc(kind: game.SceneName) {
+	if kind == game.SceneName.None {
 		log.warn("Initializing with an empty/nil scene is not supported.")
 		return
 	}
@@ -28,11 +28,11 @@ init :: proc(kind: game.SceneKind) {
 	}
 }
 
-register :: proc(kind: game.SceneKind, s: game.Scene) {
+register :: proc(kind: game.SceneName, s: game.Scene) {
 	_scenes[kind] = s
 }
 
-change :: proc(kind: game.SceneKind) {
+change :: proc(kind: game.SceneName) {
 	nextScene := &_scenes[kind]
 
 	if nextScene.init == nil && nextScene.update == nil {

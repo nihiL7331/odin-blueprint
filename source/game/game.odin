@@ -17,7 +17,7 @@ WINDOW_TITLE :: "Blueprint"
 
 init :: proc() {
 	scenes.initRegistry()
-	scene.init(game.SceneKind.Splash)
+	scene.init(game.SceneName.Splash)
 }
 
 update :: proc() {

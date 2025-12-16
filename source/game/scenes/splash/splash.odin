@@ -19,7 +19,7 @@ update :: proc(data: rawptr) {
 	// state := (^Data)(data)
 
 	if input.anyKeyPressAndConsume() {
-		scene.change(game.SceneKind.Gameplay)
+		scene.change(game.SceneName.Gameplay)
 	}
 }
 
