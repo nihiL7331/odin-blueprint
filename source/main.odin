@@ -173,8 +173,8 @@ event :: proc "c" (e: ^sapp.Event) {
 
 	if e.type == .RESIZED {
 		coreContext := core.getCoreContext()
-		coreContext.windowWidth = i32(e.window_width)
-		coreContext.windowHeight = i32(e.window_height)
+		coreContext.windowWidth = sapp.width()
+		coreContext.windowHeight = sapp.height()
 	}
 
 	input.inputEventCallback(e)
