@@ -44,6 +44,7 @@
 // - palette swapping
 // - make cleaner scene manager examples
 // - clean code (naming, structure, dependencies, helpers)
+// - debug UI color picker
 
 package main
 

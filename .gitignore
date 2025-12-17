@@ -88,3 +88,4 @@ source/core/render/shader.odin
 source/shaders/shader.odin
 source/game/scenes/generated_registry.odin
 source/types/game/generated_scene.odin
+source/types/game/generated_entity.odin

@@ -22,6 +22,11 @@ main :: proc() {
 	generateDataFile("assets/images", "source/types/game/generated_sprite.odin", "SpriteName")
 	// generateDataFile("assets/audio", "source/types/game/generated_audio.odin", "AudioName")
 	generateDataFile("assets/fonts", "source/types/game/generated_font.odin", "FontName")
+	generateDataFile(
+		"source/game/entities",
+		"source/types/game/generated_entity.odin",
+		"EntityName",
+	)
 	files := generateSceneFile(
 		"source/game/scenes",
 		"source/game/scenes/generated_registry.odin",

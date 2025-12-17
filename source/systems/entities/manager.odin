@@ -71,7 +71,7 @@ rebuildScratchHelpers :: proc() {
 	coreContext.gameState.scratch.allEntities = allEnts[:]
 }
 
-create :: proc(kind: game.EntityKind) -> ^game.Entity {
+create :: proc(kind: game.EntityName) -> ^game.Entity {
 	coreContext := core.getCoreContext()
 	index := -1
 	if len(coreContext.gameState.entities.freeList) > 0 {

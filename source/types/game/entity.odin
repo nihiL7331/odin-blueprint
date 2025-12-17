@@ -9,15 +9,9 @@ EntityHandle :: struct {
 	id:    int,
 }
 
-EntityKind :: enum {
-	nil,
-	player,
-	thing,
-}
-
 Entity :: struct {
 	handle:           EntityHandle,
-	kind:             EntityKind,
+	kind:             EntityName,
 	updateProc:       proc(_: ^Entity),
 	drawProc:         proc(_: ^Entity),
 	pos:              gmath.Vec2,

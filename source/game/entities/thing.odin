@@ -6,7 +6,7 @@ import "../../types/game"
 import "../../types/gmath"
 
 spawnThing :: proc() -> ^game.Entity {
-	e := entities.create(game.EntityKind.thing)
+	e := entities.create(game.EntityName.thing)
 
 	e.drawOffset = gmath.Vec2{0.5, 5}
 	e.drawPivot = gmath.Pivot.bottomCenter
