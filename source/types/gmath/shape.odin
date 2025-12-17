@@ -22,13 +22,13 @@ rectGetCenter :: proc(rect: Rect) -> Vec2 {
 	return {min.x + 0.5 * (max.x - min.x), min.y + 0.5 * (max.y - min.y)}
 }
 
-rectMakeWithPos :: proc(pos: Vec2, size: Vec2, pivot := Pivot.bottomLeft) -> Vec4 {
+rectMakeWithPos :: proc(pos: Vec2, size: Vec2, pivot := Pivot.bottomLeft) -> Rect {
 	rect := Vec4{0, 0, size.x, size.y}
 	rect = rectShift(rect, pos - scaleFromPivot(pivot) * size)
 	return rect
 }
 
-rectMakeWithSize :: proc(size: Vec2, pivot: Pivot) -> Vec4 {
+rectMakeWithSize :: proc(size: Vec2, pivot: Pivot) -> Rect {
 	return rectMake({}, size, pivot)
 }
 
@@ -37,7 +37,7 @@ rectMake :: proc {
 	rectMakeWithSize,
 }
 
-rectShift :: proc(rect: Vec4, amount: Vec2) -> Vec4 {
+rectShift :: proc(rect: Rect, amount: Vec2) -> Rect {
 	return {rect.x + amount.x, rect.y + amount.y, rect.z + amount.x, rect.w + amount.y}
 }
 
