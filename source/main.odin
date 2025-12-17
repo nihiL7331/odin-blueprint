@@ -26,9 +26,9 @@
 // |-> you should use heap instead of stack due to stack size constraints on web
 // (stack size can be modified, but its recommended to use more heap instead)
 // |-> avoid @(deferred_out) if possible, send pointers instead
-//
+// NOTE: you can also just disobey these limitations and have it not work on web:p
+// but IMO this forces you to make cleaner code
 // TODO:
-// - microui implementation
 // - miniaudio/fmod implementation
 // - separate shadow handling (to avoid shadow stacking)
 // - particle system
@@ -36,14 +36,14 @@
 // - spatial hash grid for collisions
 // - tweening system
 // - web localstorage implementation
-// - debug console (microui)
+// - debug console
 // - save/load system
 // - configuration/settings system
 // - steamworks support
 // - multiple font support
 // - palette swapping
 // - make cleaner scene manager examples
-// - autogenerate scene names in generateAssets.odin
+// - clean code (naming, structure, dependencies, helpers)
 
 package main
 

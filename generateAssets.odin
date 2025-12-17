@@ -3,6 +3,7 @@
 // for sprites: SpriteName in generated_sprite.odin
 // for audio: TODO:
 // for fonts: TODO:
+//TODO: rewrite this code its nasty right now
 
 package utils
 

@@ -2,7 +2,9 @@ package input
 
 import sapp "../../libs/sokol/app"
 
+import core ".."
 import "../../types/gmath"
+import "../render"
 
 import "core:math/linalg"
 
@@ -10,7 +12,7 @@ MAX_KEYCODES :: 512
 
 Input :: struct {
 	keys:             [MAX_KEYCODES]bit_set[InputFlag],
-	mouseX, mouseY:   f32, //NOTE: getting it so often, might consider making a vec2 helper
+	mouseX, mouseY:   f32,
 	scrollX, scrollY: f32,
 }
 
@@ -310,6 +312,24 @@ inputEventCallback :: proc "c" (event: ^sapp.Event) {
 	}
 }
 
+getScreenMousePos :: proc() -> gmath.Vec2 {
+	drawFrame := render.getDrawFrame()
+	coreContext := core.getCoreContext()
+	proj := drawFrame.reset.coordSpace.proj
+
+	mousePos := gmath.Vec2{_actualInputState.mouseX, _actualInputState.mouseY}
+
+	normalX := (mousePos.x / (f32(coreContext.windowWidth) * 0.5)) - 1.0
+	normalY := (mousePos.y / (f32(coreContext.windowHeight) * 0.5)) - 1.0
+	normalY *= -1
+
+	mouseNormal := gmath.Vec2{normalX, normalY}
+	mouseWorld := gmath.Vec4{mouseNormal.x, mouseNormal.y, 0, 1}
+
+	mouseWorld = linalg.inverse(proj) * mouseWorld
+
+	return mouseWorld.xy
+}
 
 mapSokolMouseButton :: proc "c" (sokolMouseButton: sapp.Mousebutton) -> KeyCode {
 	#partial switch sokolMouseButton {

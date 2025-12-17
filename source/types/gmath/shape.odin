@@ -12,7 +12,11 @@ Circle :: struct {
 
 Rect :: Vec4
 
-rectGetCenter :: proc(rect: Vec4) -> Vec2 {
+rectContains :: proc(rect: Rect, point: Vec2) -> bool { 	//useful for mouse events
+	return (point.x >= rect.x) && (point.x <= rect.z) && (point.y >= rect.y) && (point.y <= rect.w)
+}
+
+rectGetCenter :: proc(rect: Rect) -> Vec2 {
 	min := rect.xy
 	max := rect.zw
 	return {min.x + 0.5 * (max.x - min.x), min.y + 0.5 * (max.y - min.y)}
