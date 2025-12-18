@@ -112,6 +112,11 @@ screenPivot :: proc(pivot: gmath.Pivot) -> (x, y: f32) {
 	return 0, 0
 }
 
+screenPivotVec2 :: proc(pivot: gmath.Pivot) -> gmath.Vec2 {
+	pivotX, pivotY := screenPivot(pivot)
+	return gmath.Vec2{pivotX, pivotY}
+}
+
 follow :: proc(target: gmath.Vec2, rate: f32 = 10.0) {
 	_camera.target = target
 	_camera.followRate = rate
