@@ -21,6 +21,7 @@ _entityStorage: ^type.EntityStorage
 _allEntities: []type.EntityHandle
 
 getPlayer :: proc() -> ^type.Entity {
+	if _entityStorage == nil do return &_zeroEntity
 	return entityFromHandle(_entityStorage.playerHandle)
 }
 

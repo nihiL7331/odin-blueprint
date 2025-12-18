@@ -39,7 +39,6 @@
 // - particle system
 // - asset hot reloading
 // - spatial hash grid for collisions
-// - tweening system
 // - web localstorage implementation
 // - debug console
 // - save/load system
