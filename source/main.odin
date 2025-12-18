@@ -33,28 +33,6 @@
 // |-> avoid @(deferred_out) if possible, send pointers instead
 // NOTE: you can also just disobey these limitations and have it not work on web:p
 // but IMO this forces you to make cleaner code
-// TODO:
-// - miniaudio/fmod implementation
-// - separate shadow handling (to avoid shadow stacking)
-// - particle system
-// - asset hot reloading
-// - spatial hash grid for collisions
-// - web localstorage implementation
-// - debug console
-// - save/load system
-// - configuration/settings system
-// - steamworks support
-// - multiple font support
-// - palette swapping
-// - sandbox filesystem (file.load/file.write that works the same on all platforms)
-// - controller, touchscreen support
-// - make own/implement box2d for physics
-// - map editor
-// - fix input consumption for debug ui
-// - entity inspector
-// - async asset loading
-// - automatically sized debug ui
-// - debug ui text box/number box
 
 package main
 
