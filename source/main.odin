@@ -46,13 +46,15 @@
 // - steamworks support
 // - multiple font support
 // - palette swapping
-// - make cleaner scene manager examples
-// - clean code (naming, structure, dependencies, helpers)
 // - sandbox filesystem (file.load/file.write that works the same on all platforms)
 // - controller, touchscreen support
 // - make own/implement box2d for physics
 // - map editor
-// - onEnd tween function
+// - fix input consumption for debug ui
+// - entity inspector
+// - async asset loading
+// - automatically sized debug ui
+// - debug ui text box/number box
 
 package main
 
@@ -68,8 +70,8 @@ import "core/clock"
 import "core/input"
 import "core/render"
 
+import "core/platform/web"
 import gameapp "game"
-import "platform/web"
 import "types/game"
 
 _ :: web

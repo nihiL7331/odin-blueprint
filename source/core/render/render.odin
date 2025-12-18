@@ -12,11 +12,11 @@ import "core:log"
 import "core:mem"
 import "core:slice"
 
-import io "../../platform"
 import "../../types/color"
 import "../../types/game"
 import "../../types/gfx"
 import "../../types/gmath"
+import io "../platform"
 
 RenderState :: struct {
 	passAction: sg.Pass_Action,
