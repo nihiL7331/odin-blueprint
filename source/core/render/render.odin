@@ -148,7 +148,7 @@ init :: proc() {
 
 	// setup pipeline
 	pipelineDesc: sg.Pipeline_Desc = {
-		shader = sg.make_shader(quad_shader_desc(sg.query_backend())),
+		shader = sg.make_shader(shaders.quad_shader_desc(sg.query_backend())),
 		index_type = .UINT16,
 		layout = {
 			attrs = {
@@ -232,8 +232,8 @@ coreRenderFrameEnd :: proc() {
 	sg.apply_bindings(renderState.bind)
 
 	sg.apply_uniforms(
-		UB_ShaderData,
-		{ptr = &drawFrame.reset.shaderData, size = size_of(Shaderdata)},
+		shaders.UB_ShaderData,
+		{ptr = &drawFrame.reset.shaderData, size = size_of(shaders.Shaderdata)},
 	)
 
 	sg.draw(0, 6 * quadIndex, 1)
