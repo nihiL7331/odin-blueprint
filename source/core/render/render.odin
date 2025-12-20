@@ -12,6 +12,7 @@ import "core:log"
 import "core:mem"
 import "core:slice"
 
+import "../../shaders"
 import "../../types/color"
 import "../../types/game"
 import "../../types/gfx"
@@ -143,7 +144,7 @@ init :: proc() {
 		},
 	)
 
-	renderState.bind.samplers[SMP_uDefaultSampler] = sg.make_sampler({})
+	renderState.bind.samplers[shaders.SMP_uDefaultSampler] = sg.make_sampler({})
 
 	// setup pipeline
 	pipelineDesc: sg.Pipeline_Desc = {
@@ -151,14 +152,14 @@ init :: proc() {
 		index_type = .UINT16,
 		layout = {
 			attrs = {
-				ATTR_quad_aPosition = {format = .FLOAT2},
-				ATTR_quad_aColor = {format = .FLOAT4},
-				ATTR_quad_aUv = {format = .FLOAT2},
-				ATTR_quad_aLocalUv = {format = .FLOAT2},
-				ATTR_quad_aSize = {format = .FLOAT2},
-				ATTR_quad_aBytes = {format = .UBYTE4N},
-				ATTR_quad_aColorOverride = {format = .FLOAT4},
-				ATTR_quad_aParams = {format = .FLOAT4},
+				shaders.ATTR_quad_aPosition = {format = .FLOAT2},
+				shaders.ATTR_quad_aColor = {format = .FLOAT4},
+				shaders.ATTR_quad_aUv = {format = .FLOAT2},
+				shaders.ATTR_quad_aLocalUv = {format = .FLOAT2},
+				shaders.ATTR_quad_aSize = {format = .FLOAT2},
+				shaders.ATTR_quad_aBytes = {format = .UBYTE4N},
+				shaders.ATTR_quad_aColorOverride = {format = .FLOAT4},
+				shaders.ATTR_quad_aParams = {format = .FLOAT4},
 			},
 		},
 	}
@@ -218,8 +219,8 @@ coreRenderFrameEnd :: proc() {
 		if quadIndex >= MAX_QUADS do break
 	}
 
-	renderState.bind.views[VIEW_uTex] = atlas.sgView
-	renderState.bind.views[VIEW_uFontTex] = font.sgView
+	renderState.bind.views[shaders.VIEW_uTex] = atlas.sgView
+	renderState.bind.views[shaders.VIEW_uFontTex] = font.sgView
 
 	sg.update_buffer(
 		renderState.bind.vertex_buffers[0],

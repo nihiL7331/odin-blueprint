@@ -3,7 +3,7 @@
 // "v" vertex out/fragment in (varyings)
 // "o" fragment out (outputs)
 // "u" for cpu called (uniforms)
-@header package render
+@header package shaders
 @header import sg "../libs/sokol/gfx"
 @header import "../types/gmath"
 
