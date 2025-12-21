@@ -224,7 +224,7 @@ coreRenderFrameEnd :: proc() {
 
 	sg.update_buffer(
 		renderState.bind.vertex_buffers[0],
-		{ptr = raw_data(actualQuadData[:]), size = auto_cast quadIndex * size_of(gfx.Quad)},
+		{ptr = raw_data(actualQuadData[:]), size = uint(quadIndex) * size_of(gfx.Quad)},
 	)
 
 	sg.begin_pass({action = renderState.passAction, swapchain = sglue.swapchain()})
@@ -298,7 +298,7 @@ loadSpritesIntoAtlas :: proc() {
 		width, height, channels: i32
 		imgData := stbi.load_from_memory(
 			raw_data(pngData),
-			auto_cast len(pngData),
+			i32(len(pngData)),
 			&width,
 			&height,
 			&channels,

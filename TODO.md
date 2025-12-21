@@ -24,9 +24,13 @@
 - [ ] map editor
 - [ ] entity inspector
 - [ ] async asset loading\*
-- [ ] make systems/camera just a camera controller\*
-- [ ] rust package manager
+- [ ] move all generated files to generated directory\*
 
 ## IN PROGRESS
 
+- [ ] rust package manager
+- [ ] build-time atlas packing\*
+
 ## DONE
+
+- [ ] make systems/camera just a camera controller\*
