@@ -90,3 +90,4 @@ source/game/scenes/generated_registry.odin
 source/types/game/generated_scene.odin
 source/types/game/generated_entity.odin
 source/systems/entities/type/generated_entity.odin
+assets/images/atlas.png
