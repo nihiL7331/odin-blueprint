@@ -59,14 +59,18 @@ drawUiLayer :: proc() {
 
 	render.setCoordSpace(render.getScreenSpace())
 
-	topRight := render.screenPivot(gmath.Pivot.topRight)
-	fpsText := fmt.tprintf("FPS: %.2f", 1.0 / coreContext.deltaTime)
-	render.drawText(
-		topRight - 2,
-		fpsText,
-		zLayer = game.ZLayer.ui,
-		pivot = gmath.Pivot.topRight,
-		scale = 0.5,
-		col = color.WHITE,
-	)
+	font, ok := render.getFont(.alagard, 15)
+	if ok {
+		topRight := render.screenPivot(gmath.Pivot.topRight)
+		fpsText := fmt.tprintf("FPS: %.2f", 1.0 / coreContext.deltaTime)
+		render.drawText(
+			topRight - 2,
+			fpsText,
+			&font,
+			scale = 0.5,
+			zLayer = game.ZLayer.ui,
+			pivot = gmath.Pivot.topRight,
+			col = color.WHITE,
+		)
+	}
 }

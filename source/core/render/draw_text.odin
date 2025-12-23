@@ -11,6 +11,7 @@ drawText :: drawTextWithDropShadow
 drawTextWrapped :: proc(
 	pos: gmath.Vec2,
 	text: string,
+	font: ^Font,
 	wrapWidth: f32,
 	col := color.WHITE,
 	scale := 1.0,
@@ -19,12 +20,13 @@ drawTextWrapped :: proc(
 	colOverride := gmath.Vec4{0, 0, 0, 0},
 ) -> gmath.Vec2 {
 	//TODO: wrapping text
-	return drawTextNoDropShadow(pos, text, col, scale, pivot, zLayer, colOverride)
+	return drawTextNoDropShadow(pos, text, font, col, scale, pivot, zLayer, colOverride)
 }
 
 drawTextWithDropShadow :: proc(
 	pos: gmath.Vec2,
 	text: string,
+	font: ^Font,
 	dropShadowCol := color.BLACK,
 	col := color.WHITE,
 	scale := 1.0,
@@ -36,6 +38,7 @@ drawTextWithDropShadow :: proc(
 	drawTextNoDropShadow(
 		pos + offset,
 		text,
+		font = font,
 		col = dropShadowCol * col,
 		scale = scale,
 		pivot = pivot,
@@ -45,6 +48,7 @@ drawTextWithDropShadow :: proc(
 	dim := drawTextNoDropShadow(
 		pos,
 		text,
+		font = font,
 		col = col,
 		scale = scale,
 		pivot = pivot,
@@ -58,6 +62,7 @@ drawTextWithDropShadow :: proc(
 drawTextNoDropShadow :: proc(
 	pos: gmath.Vec2,
 	text: string,
+	font: ^Font,
 	col := color.WHITE,
 	scale := 1.0,
 	pivot := gmath.Pivot.bottomLeft,
@@ -79,8 +84,8 @@ drawTextNoDropShadow :: proc(
 		q: tt.aligned_quad
 		tt.GetBakedQuad(
 			&font.charData[0],
-			fontBitmapW,
-			fontBitmapH,
+			BITMAP_WIDTH,
+			BITMAP_HEIGHT,
 			cast(i32)char - 32,
 			&advanceX,
 			&advanceY,
@@ -117,8 +122,8 @@ drawTextNoDropShadow :: proc(
 		q: tt.aligned_quad
 		tt.GetBakedQuad(
 			&font.charData[0],
-			fontBitmapW,
-			fontBitmapH,
+			BITMAP_WIDTH,
+			BITMAP_HEIGHT,
 			cast(i32)char - 32,
 			&advanceX,
 			&advanceY,

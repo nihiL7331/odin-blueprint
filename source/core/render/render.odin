@@ -4,7 +4,6 @@ import sg "../../libs/sokol/gfx"
 import sglue "../../libs/sokol/glue"
 import slog "../../libs/sokol/log"
 import stbi "../../libs/stb/image"
-import tt "../../libs/stb/truetype"
 
 import "core:fmt"
 import "core:log"
@@ -31,17 +30,10 @@ Atlas :: struct {
 }
 atlas: Atlas
 
-fontBitmapW :: 256
-fontBitmapH :: 256
-charCount :: 96
-Font :: struct {
-	charData: [charCount]tt.bakedchar,
-	sgView:   sg.View,
-}
-font: Font
-
 @(private)
 _drawFrame: gfx.DrawFrame
+@(private)
+_clearedFrame: bool
 
 MAX_QUADS :: 8192
 MAX_VERTS :: MAX_QUADS * 4
@@ -92,7 +84,6 @@ init :: proc() {
 	)
 
 	loadSpritesIntoAtlas()
-	loadFont()
 
 	// make the vertex buffer
 	renderState.bind.vertex_buffers[0] = sg.make_buffer(
@@ -160,59 +151,12 @@ init :: proc() {
 
 coreRenderFrameStart :: proc() {
 	resetDrawFrame()
+	renderState.bind.views[shaders.VIEW_uTex] = atlas.sgView
+	_clearedFrame = false
 }
 
 coreRenderFrameEnd :: proc() {
-	drawFrame := getDrawFrame()
-
-	quadIndex := 0
-
-	for &quadsInLayer, layerIndex in drawFrame.reset.quads {
-		count := len(quadsInLayer)
-		if count == 0 do continue
-
-		currentLayer := game.ZLayer(layerIndex)
-		if currentLayer in drawFrame.reset.sortedLayers {
-			slice.sort_by(quadsInLayer[:], ySortCompare)
-		}
-
-		spaceLeft := MAX_QUADS - quadIndex
-		if count > spaceLeft {
-			count = spaceLeft
-			log.warn("Quad buffer full.")
-		}
-
-		if count <= 0 do break
-
-		destPtr := &actualQuadData[quadIndex]
-		srcPtr := raw_data(quadsInLayer)
-
-		mem.copy(destPtr, srcPtr, count * size_of(gfx.Quad))
-
-		quadIndex += count
-		if quadIndex >= MAX_QUADS do break
-	}
-
-	renderState.bind.views[shaders.VIEW_uTex] = atlas.sgView
-	renderState.bind.views[shaders.VIEW_uFontTex] = font.sgView
-
-	sg.update_buffer(
-		renderState.bind.vertex_buffers[0],
-		{ptr = raw_data(actualQuadData[:]), size = uint(quadIndex) * size_of(gfx.Quad)},
-	)
-
-	sg.begin_pass({action = renderState.passAction, swapchain = sglue.swapchain()})
-	sg.apply_pipeline(renderState.pip)
-	sg.apply_bindings(renderState.bind)
-
-	sg.apply_uniforms(
-		shaders.UB_ShaderData,
-		{ptr = &drawFrame.reset.shaderData, size = size_of(shaders.Shaderdata)},
-	)
-
-	sg.draw(0, 6 * quadIndex, 1)
-	sg.end_pass()
-
+	flushBatch()
 	sg.commit()
 }
 
@@ -220,6 +164,7 @@ resetDrawFrame :: proc() {
 	drawFrame := getDrawFrame()
 
 	drawFrame.reset = {}
+	_setCoordSpaceDefault()
 
 	drawFrame.reset.quads[game.ZLayer.background] = make(
 		[dynamic]gfx.Quad,
@@ -251,6 +196,77 @@ resetDrawFrame :: proc() {
 		1024,
 		allocator = context.temp_allocator,
 	)
+}
+
+setFontTexture :: proc(view: sg.View) {
+	currentId := renderState.bind.views[shaders.VIEW_uFontTex].id
+
+	if currentId != view.id {
+		flushBatch()
+		renderState.bind.views[shaders.VIEW_uFontTex] = view
+	}
+}
+
+flushBatch :: proc() {
+	drawFrame := getDrawFrame()
+
+	quadIndex := 0
+
+	for &quadsInLayer, layerIndex in drawFrame.reset.quads {
+		count := len(quadsInLayer)
+		if count == 0 do continue
+
+		currentLayer := game.ZLayer(layerIndex)
+		if currentLayer in drawFrame.reset.sortedLayers {
+			slice.sort_by(quadsInLayer[:], ySortCompare)
+		}
+
+		spaceLeft := MAX_QUADS - quadIndex
+		if count > spaceLeft {
+			count = spaceLeft
+			log.warn("Quad buffer full.")
+		}
+
+		if count <= 0 do break
+
+		destPtr := &actualQuadData[quadIndex]
+		srcPtr := raw_data(quadsInLayer)
+
+		mem.copy(destPtr, srcPtr, count * size_of(gfx.Quad))
+
+		quadIndex += count
+		if quadIndex >= MAX_QUADS do break
+	}
+
+	if quadIndex == 0 do return
+
+	action := renderState.passAction
+	if _clearedFrame {
+		action.colors[0].load_action = .LOAD
+	} else {
+		action.colors[0].load_action = .CLEAR
+		_clearedFrame = true
+	}
+
+	sg.update_buffer(
+		renderState.bind.vertex_buffers[0],
+		{ptr = raw_data(actualQuadData[:]), size = uint(quadIndex) * size_of(gfx.Quad)},
+	)
+	sg.begin_pass({action = action, swapchain = sglue.swapchain()})
+	sg.apply_pipeline(renderState.pip)
+	sg.apply_bindings(renderState.bind)
+
+	sg.apply_uniforms(
+		shaders.UB_ShaderData,
+		{ptr = &drawFrame.reset.shaderData, size = size_of(shaders.Shaderdata)},
+	)
+
+	sg.draw(0, 6 * i32(quadIndex), 1)
+	sg.end_pass()
+
+	for &quadsInLayer in drawFrame.reset.quads {
+		clear(&quadsInLayer)
+	}
 }
 
 loadSpritesIntoAtlas :: proc() {
@@ -287,42 +303,6 @@ loadSpritesIntoAtlas :: proc() {
 
 	atlas.sgView = sg.make_view({texture = sg.Texture_View_Desc({image = sgImg})})
 }
-
-loadFont :: proc() { 	//TODO: abstract this out, fix the wrong fontHeight issue
-	bitmap, err := mem.alloc(fontBitmapW * fontBitmapH)
-	assert(err == .None, "Failed to allocate bitmap memory (font).")
-	fontHeight := 15
-	path := "assets/fonts/alagard.ttf"
-	ttfData, succ := io.read_entire_file(path)
-	assert(succ, "Failed to read font data.")
-
-	ret := tt.BakeFontBitmap(
-		raw_data(ttfData),
-		0,
-		f32(fontHeight),
-		auto_cast bitmap,
-		fontBitmapW,
-		fontBitmapH,
-		32,
-		charCount,
-		&font.charData[0],
-	)
-	assert(ret > 0, "Not enough space in the font bitmap.")
-
-	desc: sg.Image_Desc
-	desc.width = fontBitmapW
-	desc.height = fontBitmapH
-	desc.pixel_format = .R8
-	desc.data.subimage[0][0] = {
-		ptr  = bitmap,
-		size = fontBitmapW * fontBitmapH,
-	}
-	sgImg := sg.make_image(desc)
-	if sgImg.id == sg.INVALID_ID do log.error("Failed to make a font image.")
-
-	font.sgView = sg.make_view({texture = sg.Texture_View_Desc({image = sgImg})})
-}
-
 
 drawQuadProjected :: proc(
 	worldToClip: gmath.Mat4,
