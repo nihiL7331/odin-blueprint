@@ -174,7 +174,7 @@ KeyCode :: enum {
 }
 
 state: ^Input
-initState :: proc() {
+init :: proc() {
 	state = &_actualInputState
 }
 

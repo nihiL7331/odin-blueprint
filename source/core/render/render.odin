@@ -87,7 +87,7 @@ init :: proc() {
 
 	// make the vertex buffer
 	renderState.bind.vertex_buffers[0] = sg.make_buffer(
-		{usage = {dynamic_update = true}, size = size_of(actualQuadData)},
+		{usage = {stream_update = true}, size = size_of(actualQuadData)},
 	)
 
 	// make and fill the index buffer
@@ -151,12 +151,24 @@ init :: proc() {
 
 coreRenderFrameStart :: proc() {
 	resetDrawFrame()
-	renderState.bind.views[shaders.VIEW_uTex] = atlas.sgView
+
+	if atlas.sgView.id != sg.INVALID_ID {
+		renderState.bind.views[shaders.VIEW_uTex] = atlas.sgView
+		renderState.bind.views[shaders.VIEW_uFontTex] = atlas.sgView
+	}
+
+	renderState.passAction.colors[0].load_action = .CLEAR
+
+	sg.begin_pass({action = renderState.passAction, swapchain = sglue.swapchain()})
+
+	sg.apply_pipeline(renderState.pip)
+
 	_clearedFrame = false
 }
 
 coreRenderFrameEnd :: proc() {
 	flushBatch()
+	sg.end_pass()
 	sg.commit()
 }
 
@@ -164,7 +176,6 @@ resetDrawFrame :: proc() {
 	drawFrame := getDrawFrame()
 
 	drawFrame.reset = {}
-	_setCoordSpaceDefault()
 
 	drawFrame.reset.quads[game.ZLayer.background] = make(
 		[dynamic]gfx.Quad,
@@ -240,20 +251,12 @@ flushBatch :: proc() {
 
 	if quadIndex == 0 do return
 
-	action := renderState.passAction
-	if _clearedFrame {
-		action.colors[0].load_action = .LOAD
-	} else {
-		action.colors[0].load_action = .CLEAR
-		_clearedFrame = true
-	}
-
-	sg.update_buffer(
+	offset := sg.append_buffer(
 		renderState.bind.vertex_buffers[0],
 		{ptr = raw_data(actualQuadData[:]), size = uint(quadIndex) * size_of(gfx.Quad)},
 	)
-	sg.begin_pass({action = action, swapchain = sglue.swapchain()})
-	sg.apply_pipeline(renderState.pip)
+
+	renderState.bind.vertex_buffer_offsets[0] = offset
 	sg.apply_bindings(renderState.bind)
 
 	sg.apply_uniforms(
@@ -262,7 +265,6 @@ flushBatch :: proc() {
 	)
 
 	sg.draw(0, 6 * i32(quadIndex), 1)
-	sg.end_pass()
 
 	for &quadsInLayer in drawFrame.reset.quads {
 		clear(&quadsInLayer)

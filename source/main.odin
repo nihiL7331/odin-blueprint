@@ -111,7 +111,7 @@ init :: proc "c" () {
 	coreContext.windowHeight = sapp.height()
 
 
-	input.initState()
+	input.init()
 	render.init()
 	gameapp.init()
 }

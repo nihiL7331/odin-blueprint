@@ -35,7 +35,7 @@ draw :: proc(data: rawptr) {
 	centerCenter := render.screenPivot(gmath.Pivot.centerCenter)
 	render.drawSprite(
 		centerCenter,
-		game.SpriteName.bald_logo,
+		game.SpriteName.bonsai_logo,
 		col = gmath.Vec4{1.0, 1.0, 1.0, state.logoAlpha},
 	)
 }
