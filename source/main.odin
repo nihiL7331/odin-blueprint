@@ -37,7 +37,6 @@
 package main
 
 import "base:runtime"
-import "core:log"
 
 import sapp "libs/sokol/app"
 import sg "libs/sokol/gfx"
