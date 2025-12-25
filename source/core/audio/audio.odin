@@ -69,6 +69,7 @@ play :: proc(id: SoundHandle, volume: f32 = 1.0, loop: bool = false) {
 	}
 }
 
+@(private)
 _audioCallback :: proc "c" (buffer: ^f32, numFrames: i32, numChannels: i32) {
 	context = {}
 	sync.lock(&_mixer.lock)
