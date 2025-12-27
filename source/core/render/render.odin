@@ -213,7 +213,7 @@ _initDrawFrameLayers :: proc() {
 
 resetDrawFrame :: proc() {
 	drawFrame := getDrawFrame()
-	drawFrame.reset.coordSpace = {}
+	drawFrame.reset = {}
 
 	for &layer in drawFrame.reset.quads {
 		clear(&layer)
