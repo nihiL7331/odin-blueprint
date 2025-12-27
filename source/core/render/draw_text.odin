@@ -35,6 +35,7 @@ drawTextWithDropShadow :: proc(
 	colOverride := gmath.Vec4{0, 0, 0, 0},
 ) -> gmath.Vec2 {
 	offset := gmath.Vec2{1, -1} * f32(scale)
+
 	drawTextNoDropShadow(
 		pos + offset,
 		text,
@@ -45,6 +46,7 @@ drawTextWithDropShadow :: proc(
 		zLayer = zLayer,
 		colOverride = colOverride,
 	)
+
 	dim := drawTextNoDropShadow(
 		pos,
 		text,
@@ -75,7 +77,7 @@ drawTextNoDropShadow :: proc(
 		getDrawFrame().reset.activeZLayer = zLayer
 	}
 
-	//find size
+	// find size
 	totalSize: gmath.Vec2
 	for char, i in text {
 		advanceX: f32

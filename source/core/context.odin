@@ -12,7 +12,7 @@ initCoreContext :: proc() -> ^game.CoreContext {
 }
 
 setCoreContext :: proc(ctx: game.CoreContext) {
-	_coreContext = ctx
+	_coreContext = ctx // abbreviation since 'context' cant be used:p
 }
 
 getCoreContext :: proc() -> ^game.CoreContext {

@@ -15,9 +15,10 @@ _getWorld :: proc() -> ^game.WorldState {
 
 init :: proc(kind: game.SceneName) {
 	if kind == game.SceneName.nil {
-		log.warn("Initializing with an empty/nil scene is not supported.")
+		log.error("Initializing with an empty/nil scene is not supported.")
 		return
 	}
+
 	startScene := &_scenes[kind]
 	_getWorld().currentScene = startScene
 
@@ -26,8 +27,9 @@ init :: proc(kind: game.SceneName) {
 	}
 }
 
-register :: proc(kind: game.SceneName, s: game.Scene) {
-	_scenes[kind] = s
+// called by automatically generated registry
+register :: proc(kind: game.SceneName, scene: game.Scene) {
+	_scenes[kind] = scene
 }
 
 //TODO: built-in scene change effect?
@@ -35,7 +37,7 @@ change :: proc(kind: game.SceneName) {
 	nextScene := &_scenes[kind]
 
 	if nextScene == nil || (nextScene.init == nil && nextScene.update == nil) {
-		log.warn("Attempted to load an unregistered scene.")
+		log.error("Attempted to load an unregistered scene.")
 		return
 	}
 

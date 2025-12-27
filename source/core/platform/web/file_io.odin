@@ -15,6 +15,8 @@ import "core:log"
 import "core:mem"
 import "core:strings"
 
+_ :: mem
+
 @(default_calling_convention = "c")
 foreign _ {
 	fopen :: proc(filename, mode: cstring) -> ^FILE ---

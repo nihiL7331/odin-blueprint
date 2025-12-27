@@ -8,17 +8,17 @@ import "../../types/gmath"
 import "core:math/linalg"
 
 getWorldSpace :: proc() -> gfx.CoordSpace {
-	p := getWorldSpaceProj()
-	c := getWorldSpaceCamera()
-	invC := linalg.inverse(c)
+	proj := getWorldSpaceProj()
+	camera := getWorldSpaceCamera()
+	inverseCamera := linalg.inverse(camera)
 
-	return {proj = p, camera = c, viewProj = p * invC}
+	return {proj = proj, camera = camera, viewProj = proj * inverseCamera}
 }
 getScreenSpace :: proc() -> gfx.CoordSpace {
-	p := getScreenSpaceProj()
-	c := gmath.Mat4(1)
+	proj := getScreenSpaceProj()
+	camera := gmath.Mat4(1)
 
-	return {proj = p, camera = c, viewProj = p}
+	return {proj = proj, camera = camera, viewProj = proj}
 }
 
 getWorldSpaceProj :: proc() -> gmath.Mat4 {
@@ -36,10 +36,10 @@ getWorldSpaceProj :: proc() -> gmath.Mat4 {
 getWorldSpaceCamera :: proc() -> gmath.Mat4 {
 	coreContext := core.getCoreContext()
 
-	cam := gmath.Mat4(1)
-	cam *= gmath.xFormTranslate(coreContext.gameState.world.cameraPosition)
-	cam *= gmath.xFormScale(getCameraZoom())
-	return cam
+	camera := gmath.Mat4(1)
+	camera *= gmath.xFormTranslate(coreContext.gameState.world.cameraPosition)
+	camera *= gmath.xFormScale(getCameraZoom())
+	return camera
 }
 
 getCameraZoom :: proc() -> f32 {
