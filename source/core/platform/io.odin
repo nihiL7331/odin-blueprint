@@ -32,3 +32,37 @@ write_entire_file :: proc(name: string, data: []byte, truncate := true) -> (succ
 		return desktop.write_entire_file(name, data, truncate)
 	}
 }
+
+@(require_results)
+loadStruct :: proc(key: string, value: ^$T) -> (success: bool) {
+	when IS_WEB {
+		return web.loadStruct(key, value)
+	} else {
+		return desktop.loadStruct(key, value)
+	}
+}
+
+saveStruct :: proc(key: string, value: ^$T) -> (success: bool) {
+	when IS_WEB {
+		return web.saveStruct(key, value)
+	} else {
+		return desktop.saveStruct(key, value)
+	}
+}
+
+@(require_results)
+loadBytes :: proc(key: string, allocator := context.allocator) -> (data: []byte, success: bool) {
+	when IS_WEB {
+		return web.loadBytes(key, allocator)
+	} else {
+		return desktop.loadBytes(key, allocator)
+	}
+}
+
+saveBytes :: proc(key: string, data: []byte) -> (success: bool) {
+	when IS_WEB {
+		return web.saveBytes(key, data)
+	} else {
+		return desktop.saveBytes(key, data)
+	}
+}

@@ -92,3 +92,4 @@ source/types/game/generated_entity.odin
 source/systems/entities/type/generated_entity.odin
 assets/images/atlas.png
 source/types/game/generated_audio.odin
+saves

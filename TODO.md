@@ -6,14 +6,10 @@
 
 ### BUGS
 
-- [ ] player teleports to (0,0) after a couple of seconds, probably a tweening issue
-
 ### PRIORITY 0
 
 - [ ] add better logging and comments\*
 - [ ] controller, touchscreen support\*
-- [ ] web localstorage implementation\*
-- [ ] save/load system\*
 - [ ] ldtk support\*
 - [ ] basic aabb rework (swept?)\*
 - [ ] auto-scaling on immediate ui\*
@@ -44,8 +40,6 @@
 
 ## IN PROGRESS
 
-- [ ] sokol audio implementation\*
-
 ## DONE
 
 - [x] make systems/camera just a camera controller\*
@@ -54,3 +48,6 @@
 - [x] multiple font support\*
 - [x] logger\*
 - [x] move scenes generation from utils to rust CLI\*
+- [x] sokol audio implementation\*
+- [x] save/load system\*
+  - [x] web localstorage implementation\*

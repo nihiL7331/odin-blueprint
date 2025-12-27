@@ -97,7 +97,47 @@ Feel free to edit it to your likings.-->
         },
 
         instantiateWasm: (imports, successCallback) => {
-          const newImports = { ...odinImports, ...imports };
+          const readString = (ptr, len) => {
+            const mem = odinMemoryInterface.memory;
+            const bytes = new Uint8Array(mem.buffer, ptr, len);
+            return new TextDecoder("utf-8").decode(bytes);
+          };
+
+          const jsModule = {
+            js_save: (keyPtr, keyLen, dataPtr, dataLen) => {
+              const key = readString(keyPtr, keyLen);
+              const data = readString(dataPtr, dataLen);
+              localStorage.setItem(key, data);
+            },
+            js_load_size: (keyPtr, keyLen) => {
+              const key = readString(keyPtr, keyLen);
+              const item = localStorage.getItem(key);
+              return item ? item.length : 0;
+            },
+            js_load: (keyPtr, keyLen, destPtr, maxLen) => {
+              const key = readString(keyPtr, keyLen);
+              const item = localStorage.getItem(key);
+              if (!item) return;
+
+              const encoder = new TextEncoder();
+              const bytes = encoder.encode(item);
+
+              const mem = odinMemoryInterface.memory;
+              const dest = new Uint8Array(mem.buffer, destPtr, maxLen);
+              dest.set(bytes);
+            },
+          };
+
+          const newImports = {
+            ...odinImports,
+            ...imports,
+            env: {
+              ...odinImports.env,
+              ...imports.env,
+            },
+            js: jsModule,
+          };
+
           //NOTE: make sure your wasm file is named index.wasm, otherwise this breaks
           return WebAssembly.instantiateStreaming(
             fetch("index.wasm"),
